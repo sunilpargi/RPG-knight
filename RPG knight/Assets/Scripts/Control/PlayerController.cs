@@ -4,14 +4,21 @@ using UnityEngine;
 using RPG.Movement;
 using System;
 using RPG.Combat;
+using RPG.Core;
 
 namespace RPG.Control
 {
     public class PlayerController : MonoBehaviour
     {
+        Health health;
+        private void Start()
+        {
+            health = GetComponent<Health>();
+        }
 
         private void Update()
         {
+            if (health.IsDead()) { return; }
             if (InteractiveToCombat()) { return; }
             if (InteractiveToMovement()) { return; } 
         }
@@ -23,14 +30,16 @@ namespace RPG.Control
             {
 
                 CombatTarget target = hit.transform.GetComponent<CombatTarget>();
-                if (!GetComponent<Fighter>().CanAttack(target))
+                if (target == null) continue;
+
+                if (!GetComponent<Fighter>().CanAttack(target.gameObject))
                 {
                     continue;
                 }
 
                 if (Input.GetMouseButton(0))
                 {
-                    GetComponent<Fighter>().Attack(target);
+                    GetComponent<Fighter>().Attack(target.gameObject);
                 }
                 return true;
             }
@@ -49,7 +58,7 @@ namespace RPG.Control
 
                 if (Input.GetMouseButton(0))
                 {
-                    GetComponent<Mover>().StartMoveActioon(hit.point);
+                    GetComponent<Mover>().StartMoveAction(hit.point ,1f);
                    
                 }
                
